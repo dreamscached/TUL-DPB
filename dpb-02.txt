@@ -1,0 +1,28 @@
+# redis-cli
+127.0.0.1:6379> set foo_1 'bar'
+OK
+127.0.0.1:6379> set foo_2 42
+OK
+127.0.0.1:6379> set foo_3 3.14
+OK
+127.0.0.1:6379> set foo_4 'lulz'
+OK
+127.0.0.1:6379> set foo_5 'barbaz'
+OK
+127.0.0.1:6379> exists foo_1
+(integer) 1
+127.0.0.1:6379> get foo_5
+"barbaz"
+127.0.0.1:6379> set foo_4 'bar'
+OK
+127.0.0.1:6379> setex foo_6_ex 60 'lololol'
+OK
+127.0.0.1:6379> getex foo_6_ex
+"lololol"
+127.0.0.1:6379> ttl foo_6_ex
+(integer) 25
+127.0.0.1:6379> ttl foo_6_ex
+(integer) 23
+127.0.0.1:6379> ttl foo_6_ex
+(integer) 22
+127.0.0.1:6379> 
