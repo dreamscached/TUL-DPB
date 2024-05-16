@@ -1,0 +1,171 @@
+Uloha 1.
+
+GET /products/_search?pretty
+{
+  "query": {
+    "match": {
+      "name": "coffee"
+    }
+  }
+}
+
+Uloha 2.
+
+GET /products/_search?pretty
+{
+  "query": {
+    "match": {
+      "name": {
+        "query": "coffee",
+        "fuzziness": 2
+      }
+    }
+  }
+}
+
+Uloha 3.
+
+GET /products/_search?pretty
+{
+  "query": {
+    "term": {
+      "tags": "coffee"
+    }
+  }
+}
+
+Uloha 4.
+
+GET /products/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "tags": "Coffee"
+          }
+        },
+        {
+          "range": {
+            "in_stock": {
+              "lte": 10
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+Uloha 5.
+
+GET /products/_search
+{
+  "_source": ["name"],
+  "query": {
+    "bool": {
+      "must": {
+        "match": {
+          "name": "coffee"
+        }
+      },
+      "must_not": {
+        "match": {
+          "name": "cup"
+        }
+      }
+    }
+  }
+}
+
+Uloha 6.
+
+GET /products/_search
+{
+  "query": {
+    "range": {
+      "date_added": {
+        "gt": "2000-01-01"
+      }
+    }
+  }
+}
+
+Uloha 7.
+
+GET /products/_search
+{
+  "query": {
+    "match": {
+      "name": "RedWine"
+    }
+  }
+}
+
+
+Bonus 1.
+
+PUT /products/_mapping
+{
+  "properties": {
+    "name_suggest": {
+      "type": "completion"
+    }
+  }
+}
+
+PUT /products/_mapping
+{
+  "properties": {
+    "name_autocomplete": {
+      "type": "search_as_you_type"
+    }
+  }
+}
+
+GET /products/_search
+{
+  "size": 5,
+  "query": {
+    "match_phrase_prefix": {
+      "name": {
+        "query": "coffee"
+      }
+    }
+  }
+}
+
+Bonus 2.
+
+GET /recipes/_search
+{
+  "query": {
+    "multi_match": {
+      "query": "spaghetti",
+      "fields": ["title", "description", "ingredients"]
+    }
+  }
+}
+
+Bonus 3.
+
+GET /recipes/_search
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "match_phrase": {
+            "title": "Pasta Carbonara"
+          }
+        },
+        {
+          "match_phrase": {
+            "title": "Carbonara Pasta"
+          }
+        }
+      ]
+    }
+  }
+}
