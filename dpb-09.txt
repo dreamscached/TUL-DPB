@@ -1,0 +1,195 @@
+PUT /orders-new
+{
+  "mappings": {
+    "properties": {
+      "purchased_at": {
+        "type": "date",
+        "format": "strict_date_optional_time||epoch_millis"
+      },
+      "lines": {
+        "type": "nested",
+        "properties": {
+          "product_id": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "float"
+          },
+          "quantity": {
+            "type": "integer"
+          }
+        }
+      },
+      "total_amount": {
+        "type": "float"
+      },
+      "salesman": {
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "text"
+          }
+        }
+      },
+      "sales_channel": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+POST /orders-new/_doc
+{
+  "purchased_at": "2024-05-22T12:34:56",
+  "lines": [
+    {
+      "product_id": 1,  // Assuming product_id 1 is coffee
+      "amount": 5.99,
+      "quantity": 2
+    },
+    {
+      "product_id": 2,
+      "amount": 10.49,
+      "quantity": 1
+    },
+    {
+      "product_id": 3,
+      "amount": 15.99,
+      "quantity": 3
+    }
+  ],
+  "total_amount": 64.94,
+  "salesman": {
+    "id": 11,
+    "name": "Matthus Mitkov"
+  },
+  "sales_channel": "store",
+  "status": "processed"
+}
+
+POST /_analyze
+{
+  "analyzer": "standard",
+  "text": "The quick brown fox jumps over the lazy dog"
+}
+
+POST /_analyze
+{
+  "analyzer": "whitespace",
+  "text": "The quick brown fox jumps over the lazy dog"
+}
+
+POST /_analyze
+{
+  "analyzer": "keyword",
+  "text": "The quick brown fox jumps over the lazy dog"
+}
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "max_price": {
+      "max": {
+        "field": "lines.amount"
+      }
+    },
+    "min_price": {
+      "min": {
+        "field": "lines.amount"
+      }
+    },
+    "avg_price": {
+      "avg": {
+        "field": "lines.amount"
+      }
+    }
+  }
+}
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "quantity_stats": {
+      "stats": {
+        "field": "lines.quantity"
+      }
+    }
+  }
+}
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "most_sold_product": {
+      "terms": {
+        "field": "lines.product_id",
+        "order": {
+          "total_quantity": "desc"
+        }
+      },
+      "aggs": {
+        "total_quantity": {
+          "sum": {
+            "field": "lines.quantity"
+          }
+        }
+      }
+    }
+  }
+}
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "tags": {
+      "nested": {
+        "path": "lines"
+      },
+      "aggs": {
+        "tag_count": {
+          "terms": {
+            "field": "lines.product_id",
+            "size": 10
+          }
+        }
+      }
+    }
+  }
+}
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "products": {
+      "nested": {
+        "path": "lines"
+      },
+      "aggs": {
+        "product_tags": {
+          "terms": {
+            "field": "lines.product_id",
+            "size": 10
+          },
+          "aggs": {
+            "price_stats": {
+              "stats": {
+                "field": "lines.amount"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

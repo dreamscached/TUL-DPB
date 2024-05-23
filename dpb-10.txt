@@ -1,0 +1,191 @@
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "max_price": {
+      "max": {
+        "field": "price"
+      }
+    },
+    "min_price": {
+      "min": {
+        "field": "price"
+      }
+    },
+    "avg_price": {
+      "avg": {
+        "field": "price"
+      }
+    }
+  }
+}
+
+
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "quantity_stats": {
+      "stats": {
+        "field": "quantity_sold"
+      }
+    }
+  }
+}
+
+
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "most_sold_product": {
+      "terms": {
+        "field": "product_id",
+        "order": {
+          "total_quantity": "desc"
+        },
+        "size": 1
+      },
+      "aggs": {
+        "total_quantity": {
+          "sum": {
+            "field": "quantity_sold"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "tag_count": {
+      "terms": {
+        "field": "tags.keyword"
+      }
+    }
+  }
+}
+
+
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "tags": {
+      "terms": {
+        "field": "tags.keyword"
+      },
+      "aggs": {
+        "price_stats": {
+          "stats": {
+            "field": "price"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+GET /products/_search
+{
+  "size": 0,
+  "aggs": {
+    "filtered_tags": {
+      "filters": {
+        "filters": {
+          "Coffee": {
+            "term": {
+              "tags.keyword": "Coffee"
+            }
+          },
+          "Cake": {
+            "term": {
+              "tags.keyword": "Cake"
+            }
+          }
+        }
+      },
+      "aggs": {
+        "price_stats": {
+          "stats": {
+            "field": "price"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "status_stats": {
+      "terms": {
+        "field": "status.keyword"
+      },
+      "aggs": {
+        "price_stats": {
+          "stats": {
+            "field": "total_amount"
+          }
+        }
+      }
+    }
+  }
+}
+
+
+GET /orders-new/_search
+{
+  "size": 0,
+  "aggs": {
+    "quarterly_stats": {
+      "date_histogram": {
+        "field": "purchased_at",
+        "calendar_interval": "quarter",
+        "format": "yyyy-Q",
+        "min_doc_count": 0,
+        "extended_bounds": {
+          "min": "2016-01-01",
+          "max": "2016-12-31"
+        }
+      },
+      "aggs": {
+        "average_price": {
+          "avg": {
+            "field": "total_amount"
+          }
+        },
+        "order_count": {
+          "value_count": {
+            "field": "total_amount"
+          }
+        }
+      }
+    },
+    "missing_date": {
+      "missing": {
+        "field": "purchased_at"
+      },
+      "aggs": {
+        "average_price": {
+          "avg": {
+            "field": "total_amount"
+          }
+        },
+        "order_count": {
+          "value_count": {
+            "field": "total_amount"
+          }
+        }
+      }
+    }
+  }
+}

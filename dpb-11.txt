@@ -1,0 +1,25 @@
+CREATE KEYSPACE cass01
+WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+
+DESCRIBE KEYSPACE cass01;
+USE cass01;
+
+CREATE TABLE activity (
+    id UUID,
+    datetime timestamp,
+    PRIMARY KEY (id, datetime)
+) WITH CLUSTERING ORDER BY (datetime DESC);
+
+ALTER TABLE activity ADD event text;
+DESCRIBE TABLE activity;
+
+INSERT INTO activity (id, datetime, event) VALUES (uuid(), '2024-01-01 00:00:00', 'First Event');
+
+INSERT INTO activity (id, datetime, event) VALUES (uuid(), toTimestamp(now()), 'Second Event');
+
+SELECT * FROM activity;
+
+TRUNCATE activity; -- Deletes all records from the table
+DROP TABLE activity; -- Deletes the table
+DROP KEYSPACE cass01; -- Deletes the keyspace
+
